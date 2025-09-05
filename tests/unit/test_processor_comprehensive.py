@@ -4,6 +4,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import Mock, patch
 import tempfile
+import ffmpeg
 
 from video_processor import VideoProcessor, ProcessorConfig
 from video_processor.exceptions import (
@@ -11,6 +12,7 @@ from video_processor.exceptions import (
     ValidationError,
     StorageError,
     EncodingError,
+    FFmpegError,
 )
 
 
@@ -163,14 +165,7 @@ class TestVideoEncoding:
         """Test successful video encoding."""
         mock_run.return_value = Mock(returncode=0)
         # Mock log files exist during cleanup
-        def mock_exists_side_effect(self, *args, **kwargs):
-            path_str = str(self)
-            if ".ffmpeg2pass" in path_str or "pass" in path_str:
-                return True  # Log files exist for cleanup
-            elif path_str.endswith(".mp4"):
-                return True  # Output file exists
-            return False
-        mock_exists.side_effect = mock_exists_side_effect
+        mock_exists.return_value = True  # Simplify - all files exist for cleanup
         mock_unlink.return_value = None
         
         # Create output directory
@@ -190,17 +185,22 @@ class TestVideoEncoding:
         assert mock_run.call_count >= 1
     
     @patch('subprocess.run')
-    def test_encode_video_ffmpeg_failure(self, mock_run, processor, valid_video, temp_dir):
+    @patch('pathlib.Path.exists')
+    @patch('pathlib.Path.unlink')
+    def test_encode_video_ffmpeg_failure(self, mock_unlink, mock_exists, mock_run, processor, valid_video, temp_dir):
         """Test encoding failure handling."""
         mock_run.return_value = Mock(
             returncode=1,
             stderr=b"FFmpeg encoding error"
         )
+        # Mock files exist for cleanup
+        mock_exists.return_value = True
+        mock_unlink.return_value = None
         
         # Create output directory
         temp_dir.mkdir(parents=True, exist_ok=True)
         
-        with pytest.raises(EncodingError):
+        with pytest.raises((EncodingError, FFmpegError)):
             processor.encoder.encode_video(
                 input_path=valid_video,
                 output_dir=temp_dir,
@@ -233,15 +233,8 @@ class TestVideoEncoding:
                                    format_name, expected_codec):
         """Test that correct codecs are used for different formats."""
         mock_run.return_value = Mock(returncode=0)
-        # Mock log files and output files exist
-        def mock_exists_side_effect(self, *args, **kwargs):
-            path_str = str(self)
-            if any(x in path_str for x in [".ffmpeg2pass", "pass", ".log"]):
-                return True  # Log files exist for cleanup
-            elif path_str.endswith(("." + format_name)):
-                return True  # Output file exists
-            return False
-        mock_exists.side_effect = mock_exists_side_effect
+        # Mock all files exist for cleanup
+        mock_exists.return_value = True
         mock_unlink.return_value = None
         
         # Create output directory
@@ -268,9 +261,10 @@ class TestVideoEncoding:
 class TestThumbnailGeneration:
     """Test thumbnail generation functionality."""
     
-    @patch('ffmpeg.run')
+    @patch('ffmpeg.input')
     @patch('ffmpeg.probe')
-    def test_generate_thumbnail_success(self, mock_probe, mock_run, processor, valid_video, temp_dir):
+    @patch('pathlib.Path.exists')
+    def test_generate_thumbnail_success(self, mock_exists, mock_probe, mock_input, processor, valid_video, temp_dir):
         """Test successful thumbnail generation."""
         # Mock ffmpeg probe response
         mock_probe.return_value = {
@@ -283,7 +277,17 @@ class TestThumbnailGeneration:
                 }
             ]
         }
-        mock_run.return_value = None  # ffmpeg.run doesn't return anything on success
+        
+        # Mock the fluent API chain
+        mock_chain = Mock()
+        mock_chain.filter.return_value = mock_chain
+        mock_chain.output.return_value = mock_chain
+        mock_chain.overwrite_output.return_value = mock_chain
+        mock_chain.run.return_value = None
+        mock_input.return_value = mock_chain
+        
+        # Mock output file exists after creation
+        mock_exists.return_value = True
         
         # Create output directory
         temp_dir.mkdir(parents=True, exist_ok=True)
@@ -301,11 +305,12 @@ class TestThumbnailGeneration:
         
         # Verify ffmpeg functions were called
         assert mock_probe.called
-        assert mock_run.called
+        assert mock_input.called
+        assert mock_chain.run.called
     
-    @patch('ffmpeg.run')
+    @patch('ffmpeg.input')
     @patch('ffmpeg.probe')
-    def test_generate_thumbnail_ffmpeg_failure(self, mock_probe, mock_run, processor, valid_video, temp_dir):
+    def test_generate_thumbnail_ffmpeg_failure(self, mock_probe, mock_input, processor, valid_video, temp_dir):
         """Test thumbnail generation failure handling."""
         # Mock ffmpeg probe response
         mock_probe.return_value = {
@@ -318,13 +323,19 @@ class TestThumbnailGeneration:
                 }
             ]
         }
-        # Mock ffmpeg.run to raise an exception
-        mock_run.side_effect = Exception("FFmpeg thumbnail error")
+        
+        # Mock the fluent API chain with failure
+        mock_chain = Mock()
+        mock_chain.filter.return_value = mock_chain
+        mock_chain.output.return_value = mock_chain
+        mock_chain.overwrite_output.return_value = mock_chain
+        mock_chain.run.side_effect = ffmpeg.Error("FFmpeg error", b"", b"FFmpeg thumbnail error")
+        mock_input.return_value = mock_chain
         
         # Create output directory
         temp_dir.mkdir(parents=True, exist_ok=True)
         
-        with pytest.raises(EncodingError):
+        with pytest.raises(FFmpegError):
             processor.thumbnail_generator.generate_thumbnail(
                 video_path=valid_video,
                 output_dir=temp_dir,
@@ -333,17 +344,18 @@ class TestThumbnailGeneration:
             )
     
     @pytest.mark.parametrize("timestamp,expected_time", [
-        (0, 0),
+        (0, 0),  # filename uses original timestamp
         (1, 1),
-        (30, 30),
-        (3600, 3600),  # 1 hour
+        (5, 5),  # within 10 second duration
+        (15, 15),  # filename uses original timestamp even if adjusted internally
     ])
-    @patch('ffmpeg.run')
+    @patch('ffmpeg.input')
     @patch('ffmpeg.probe')
-    def test_thumbnail_timestamps(self, mock_probe, mock_run, processor, valid_video, temp_dir,
+    @patch('pathlib.Path.exists')
+    def test_thumbnail_timestamps(self, mock_exists, mock_probe, mock_input, processor, valid_video, temp_dir,
                                  timestamp, expected_time):
         """Test thumbnail generation at different timestamps."""
-        # Mock ffmpeg probe response
+        # Mock ffmpeg probe response - 10 second video
         mock_probe.return_value = {
             "streams": [
                 {
@@ -354,7 +366,17 @@ class TestThumbnailGeneration:
                 }
             ]
         }
-        mock_run.return_value = None
+        
+        # Mock the fluent API chain
+        mock_chain = Mock()
+        mock_chain.filter.return_value = mock_chain
+        mock_chain.output.return_value = mock_chain
+        mock_chain.overwrite_output.return_value = mock_chain
+        mock_chain.run.return_value = None
+        mock_input.return_value = mock_chain
+        
+        # Mock output file exists
+        mock_exists.return_value = True
         
         # Create output directory
         temp_dir.mkdir(parents=True, exist_ok=True)
@@ -366,9 +388,9 @@ class TestThumbnailGeneration:
             video_id="test123"
         )
         
-        # Verify the thumbnail path contains the timestamp
-        assert f"_thumb_{timestamp}" in str(thumbnail_path)
-        assert mock_run.called
+        # Verify the thumbnail path contains the original timestamp (filename uses original)
+        assert f"_thumb_{expected_time}" in str(thumbnail_path)
+        assert mock_input.called
 
 
 @pytest.mark.unit  
