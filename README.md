@@ -310,6 +310,37 @@ Explore our comprehensive examples in the [`examples/`](examples/) directory:
 | [`basic_usage.py`](examples/basic_usage.py) | 🎯 Simple synchronous processing | Configuration, encoding, thumbnails |
 | [`async_processing.py`](examples/async_processing.py) | ⚡ Background task processing | Procrastinate, job queuing, monitoring |
 | [`custom_config.py`](examples/custom_config.py) | 🛠️ Advanced configuration scenarios | Quality presets, validation, custom paths |
+| [`docker_demo.py`](examples/docker_demo.py) | 🐳 Complete containerized demo | Docker, PostgreSQL, async workers |
+| [`web_demo.py`](examples/web_demo.py) | 🌐 Flask web interface | Browser-based processing, job submission |
+
+### 🐳 Docker Quick Start
+
+Get up and running in seconds with our complete Docker environment:
+
+```bash
+# Start all services (PostgreSQL, Redis, app, workers)
+docker-compose up -d
+
+# View logs from the demo application
+docker-compose logs -f app
+
+# Access web demo at http://localhost:8080
+docker-compose up demo
+
+# Run tests in Docker
+docker-compose run test
+
+# Clean up
+docker-compose down -v
+```
+
+**Services included:**
+- 🗄️ **PostgreSQL** - Database with Procrastinate job queue
+- 🔴 **Redis** - Caching and session storage
+- 🎬 **App** - Main video processor demo
+- ⚡ **Worker** - Background job processor
+- 🧪 **Test** - Automated testing environment
+- 🌐 **Demo** - Web interface for browser-based testing
 
 ### 🎬 Real-World Usage Patterns
 
@@ -455,18 +486,24 @@ uv run mypy src/
 
 Our comprehensive test suite covers:
 
-- ✅ Configuration validation and type checking
-- ✅ Path utilities and file operations
-- ✅ FFmpeg integration and error handling
-- ✅ Video metadata extraction
-- ✅ Background task processing
+- ✅ **Configuration** validation and type checking
+- ✅ **Path utilities** and file operations  
+- ✅ **FFmpeg integration** and error handling
+- ✅ **Video metadata** extraction
+- ✅ **Background task** processing
+- ✅ **Procrastinate compatibility** (2.x/3.x versions)
+- ✅ **Database migrations** with version detection
+- ✅ **Worker configuration** and option mapping
+- ✅ **360° video processing** (when dependencies available)
 
 ```bash
 ========================== test session starts ==========================
-tests/test_config.py ✅✅✅✅         [33%]
-tests/test_utils.py ✅✅✅✅✅✅✅✅   [100%]
+tests/test_config.py ✅✅✅✅✅           [15%] 
+tests/test_utils.py ✅✅✅✅✅✅✅✅       [30%]
+tests/test_procrastinate_compat.py ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅  [85%]
+tests/test_procrastinate_migration.py ✅✅✅✅✅✅✅✅✅✅✅✅✅   [100%]
 
-======================== 12 passed in 0.11s ========================
+======================== 43 passed in 0.52s ========================
 ```
 
 ---
@@ -568,12 +605,23 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 🎉 Changelog
 
+### 🚀 v0.2.0 - Procrastinate 3.x Migration & Docker Support
+
+- 🔄 **Procrastinate 3.x compatibility** with backward support for 2.x
+- 🎯 **Automatic version detection** and feature flagging 
+- 📋 **Database migration utilities** with pre/post migration support
+- 🐳 **Complete Docker environment** with multi-service orchestration
+- 🌐 **Web demo interface** with Flask-based UI
+- ⚡ **Worker compatibility layer** with unified CLI
+- 🧪 **30+ comprehensive tests** covering all compatibility scenarios
+- 📊 **uv caching optimization** following Docker best practices
+
 ### 🌟 v0.1.0 - Initial Release
 
 - ✨ **Multi-format encoding**: MP4, WebM, OGV support
 - 🖼️ **Thumbnail generation** with customizable timestamps
 - 🎞️ **Sprite sheet creation** with WebVTT files
-- ⚡ **Background processing** with Procrastinate (2.x and 3.x compatible)
+- ⚡ **Background processing** with Procrastinate integration
 - ⚙️ **Type-safe configuration** with Pydantic V2
 - 🛠️ **Modern tooling**: uv, ruff, pytest integration
 - 📚 **Comprehensive documentation** and examples
