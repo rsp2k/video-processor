@@ -28,6 +28,30 @@ dev = [
     "pytest-cov>=4.0.0",
 ]
 
+# Core 360° video processing
+video-360 = [
+    "py360convert>=0.1.0",      # 360° projection conversions
+    "opencv-python>=4.5.0",     # Advanced image processing
+    "numpy>=1.21.0",            # Mathematical operations
+    "scipy>=1.7.0",             # Scientific computing for spherical geometry
+]
+
+# Spatial audio processing for 360° videos
+spatial-audio = [
+    "librosa>=0.9.0",           # Audio analysis and processing
+    "soundfile>=0.11.0",        # Multi-channel audio I/O
+]
+
+# Enhanced metadata extraction for 360° videos
+metadata-360 = [
+    "exifread>=3.0.0",          # 360° metadata parsing
+]
+
+# Complete 360° video package
+video-360-full = [
+    "video-processor[video-360,spatial-audio,metadata-360]"
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/video_processor"]
 

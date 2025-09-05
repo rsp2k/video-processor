@@ -65,6 +65,17 @@
 
 </td>
 </tr>
+<tr>
+<td colspan="2">
+
+### 🌐 **360° Video Support** *(Optional)*
+- **Spherical video detection** and metadata extraction
+- **Projection conversions** (equirectangular, cubemap, stereographic)
+- **360° thumbnail generation** with multiple viewing angles
+- **Spatial audio processing** for immersive experiences
+
+</td>
+</tr>
 </table>
 
 ---
@@ -74,11 +85,45 @@
 ### Quick Install
 
 ```bash
-# Using uv (recommended - fastest!)
+# Basic installation (standard video processing)
 uv add video-processor
 
-# Or with pip
+# With 360° video support
+uv add "video-processor[video-360]"
+
+# With spatial audio processing  
+uv add "video-processor[spatial-audio]"
+
+# Complete 360° feature set
+uv add "video-processor[video-360-full]"
+
+# Or using pip
 pip install video-processor
+pip install "video-processor[video-360-full]"
+```
+
+### Optional Features
+
+#### 🌐 360° Video Processing
+For immersive video processing capabilities:
+- **`video-360`**: Core 360° video processing (py360convert, opencv, numpy, scipy)
+- **`spatial-audio`**: Spatial audio processing (librosa, soundfile)  
+- **`metadata-360`**: Enhanced 360° metadata extraction (exifread)
+- **`video-360-full`**: Complete 360° package (includes all above)
+
+#### 📦 Dependency Details
+```bash
+# Core 360° processing
+uv add "video-processor[video-360]"
+# Includes: py360convert, opencv-python, numpy, scipy
+
+# Spatial audio support  
+uv add "video-processor[spatial-audio]"
+# Includes: librosa, soundfile
+
+# Complete 360° experience
+uv add "video-processor[video-360-full]"
+# Includes: All 360° dependencies + exifread
 ```
 
 ### Development Setup
@@ -89,6 +134,9 @@ cd video_processor
 
 # Install with all development dependencies
 uv sync --dev
+
+# Install with dev + 360° features
+uv sync --dev --extra video-360-full
 
 # Verify installation
 uv run pytest
