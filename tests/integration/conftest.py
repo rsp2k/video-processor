@@ -32,11 +32,32 @@ def temp_video_dir() -> Generator[Path, None, None]:
 
 
 @pytest.fixture(scope="session")
-def test_video_file(temp_video_dir: Path) -> Path:
-    """Create a test video file for processing."""
-    video_file = temp_video_dir / "test_input.mp4"
+def test_suite_manager():
+    """Get test suite manager with all video fixtures."""
+    from tests.fixtures.test_suite_manager import TestSuiteManager
     
-    # Create a simple test video using FFmpeg
+    base_dir = Path(__file__).parent.parent / "fixtures" / "videos"
+    manager = TestSuiteManager(base_dir)
+    
+    # Ensure test suite is set up
+    if not (base_dir / "test_suite.json").exists():
+        manager.setup()
+    
+    return manager
+
+
+@pytest.fixture(scope="session")
+def test_video_file(test_suite_manager) -> Path:
+    """Get a reliable test video from the smoke test suite."""
+    smoke_videos = test_suite_manager.get_suite_videos("smoke")
+    
+    # Use the first valid smoke test video
+    for video_path in smoke_videos:
+        if video_path.exists() and video_path.stat().st_size > 1000:  # At least 1KB
+            return video_path
+    
+    # Fallback: generate a simple test video
+    temp_video = test_suite_manager.base_dir / "temp_test.mp4"
     cmd = [
         "ffmpeg", "-y",
         "-f", "lavfi",
@@ -44,13 +65,13 @@ def test_video_file(temp_video_dir: Path) -> Path:
         "-c:v", "libx264",
         "-preset", "ultrafast",
         "-crf", "28",
-        str(video_file)
+        str(temp_video)
     ]
     
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        assert video_file.exists(), "Test video file was not created"
-        return video_file
+        assert temp_video.exists(), "Test video file was not created"
+        return temp_video
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
         pytest.skip(f"FFmpeg not available or failed: {e}")
 

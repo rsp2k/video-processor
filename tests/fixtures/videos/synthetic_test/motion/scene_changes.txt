@@ -1,0 +1,8 @@
+file 'tests/fixtures/videos/synthetic_test/motion/scene_changes.seg0.mp4'
+file 'tests/fixtures/videos/synthetic_test/motion/scene_changes.seg1.mp4'
+file 'tests/fixtures/videos/synthetic_test/motion/scene_changes.seg2.mp4'
+file 'tests/fixtures/videos/synthetic_test/motion/scene_changes.seg3.mp4'
+file 'tests/fixtures/videos/synthetic_test/motion/scene_changes.seg4.mp4'
+file 'tests/fixtures/videos/synthetic_test/motion/scene_changes.seg5.mp4'
+file 'tests/fixtures/videos/synthetic_test/motion/scene_changes.seg6.mp4'
+file 'tests/fixtures/videos/synthetic_test/motion/scene_changes.seg7.mp4'
