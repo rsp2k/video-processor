@@ -7,6 +7,7 @@ import ffmpeg
 
 from ..config import ProcessorConfig
 from ..exceptions import FFmpegError
+from ..utils.video_360 import Video360Detection
 
 
 class VideoMetadata:
@@ -56,6 +57,10 @@ class VideoMetadata:
                 # Raw probe data for advanced use cases
                 "raw_probe_data": probe_data,
             }
+            
+            # Add 360° video detection
+            video_360_info = Video360Detection.detect_360_video(metadata)
+            metadata["video_360"] = video_360_info
 
             return metadata
 

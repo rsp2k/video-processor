@@ -5,6 +5,15 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+# Optional dependency detection for 360° features
+try:
+    from .utils.video_360 import Video360Utils, ProjectionType, StereoMode, HAS_360_SUPPORT
+except ImportError:
+    # Fallback types when 360° libraries not available
+    ProjectionType = str
+    StereoMode = str
+    HAS_360_SUPPORT = False
+
 
 class ProcessorConfig(BaseModel):
     """Configuration for video processor."""
@@ -34,6 +43,16 @@ class ProcessorConfig(BaseModel):
     # File permissions
     file_permissions: int = 0o644
     directory_permissions: int = 0o755
+    
+    # 360° Video settings (only active if 360° libraries are available)
+    enable_360_processing: bool = Field(default=HAS_360_SUPPORT)
+    auto_detect_360: bool = Field(default=True)
+    force_360_projection: ProjectionType | None = Field(default=None)
+    video_360_bitrate_multiplier: float = Field(default=2.5, ge=1.0, le=5.0)
+    generate_360_thumbnails: bool = Field(default=True)
+    thumbnail_360_projections: list[Literal["front", "back", "up", "down", "left", "right", "stereographic"]] = Field(
+        default=["front", "stereographic"]
+    )
 
     @field_validator("base_path")
     @classmethod
@@ -47,6 +66,17 @@ class ProcessorConfig(BaseModel):
         """Ensure at least one output format is specified."""
         if not v:
             raise ValueError("At least one output format must be specified")
+        return v
+    
+    @field_validator("enable_360_processing")
+    @classmethod
+    def validate_360_processing(cls, v: bool) -> bool:
+        """Validate 360° processing can be enabled."""
+        if v and not HAS_360_SUPPORT:
+            raise ValueError(
+                "360° processing requires optional dependencies. "
+                f"Install with: pip install 'video-processor[video-360]' or uv add 'video-processor[video-360]'"
+            )
         return v
 
     model_config = ConfigDict(validate_assignment=True)

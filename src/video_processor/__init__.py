@@ -9,6 +9,13 @@ from .config import ProcessorConfig
 from .core.processor import VideoProcessor
 from .exceptions import EncodingError, StorageError, VideoProcessorError
 
+# Optional 360° imports
+try:
+    from .utils.video_360 import Video360Detection, Video360Utils, HAS_360_SUPPORT
+    from .core.thumbnails_360 import Thumbnail360Generator
+except ImportError:
+    HAS_360_SUPPORT = False
+
 __version__ = "0.1.0"
 __all__ = [
     "VideoProcessor",
@@ -16,4 +23,13 @@ __all__ = [
     "VideoProcessorError",
     "EncodingError",
     "StorageError",
+    "HAS_360_SUPPORT",
 ]
+
+# Add 360° exports if available
+if HAS_360_SUPPORT:
+    __all__.extend([
+        "Video360Detection",
+        "Video360Utils", 
+        "Thumbnail360Generator",
+    ])

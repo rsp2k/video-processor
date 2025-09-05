@@ -10,6 +10,13 @@ from .encoders import VideoEncoder
 from .metadata import VideoMetadata
 from .thumbnails import ThumbnailGenerator
 
+# Optional 360° support
+try:
+    from .thumbnails_360 import Thumbnail360Generator
+    HAS_360_SUPPORT = True
+except ImportError:
+    HAS_360_SUPPORT = False
+
 
 class VideoProcessingResult:
     """Result of video processing operation."""
@@ -24,6 +31,8 @@ class VideoProcessingResult:
         sprite_file: Path | None = None,
         webvtt_file: Path | None = None,
         metadata: dict | None = None,
+        thumbnails_360: dict[str, Path] | None = None,
+        sprite_360_files: dict[str, tuple[Path, Path]] | None = None,
     ) -> None:
         self.video_id = video_id
         self.input_path = input_path
@@ -33,6 +42,8 @@ class VideoProcessingResult:
         self.sprite_file = sprite_file
         self.webvtt_file = webvtt_file
         self.metadata = metadata
+        self.thumbnails_360 = thumbnails_360 or {}
+        self.sprite_360_files = sprite_360_files or {}
 
 
 class VideoProcessor:
@@ -44,6 +55,12 @@ class VideoProcessor:
         self.encoder = VideoEncoder(config)
         self.thumbnail_generator = ThumbnailGenerator(config)
         self.metadata_extractor = VideoMetadata(config)
+        
+        # Initialize 360° thumbnail generator if available and enabled
+        if HAS_360_SUPPORT and config.enable_360_processing:
+            self.thumbnail_360_generator = Thumbnail360Generator(config)
+        else:
+            self.thumbnail_360_generator = None
 
     def _create_storage_backend(self) -> StorageBackend:
         """Create storage backend based on configuration."""
@@ -121,6 +138,46 @@ class VideoProcessor:
                 sprite_file, webvtt_file = self.thumbnail_generator.generate_sprites(
                     encoded_files["mp4"], output_dir, video_id
                 )
+            
+            # Generate 360° thumbnails and sprites if this is a 360° video
+            thumbnails_360 = {}
+            sprite_360_files = {}
+            
+            if (self.thumbnail_360_generator and 
+                self.config.generate_360_thumbnails and
+                metadata.get("video_360", {}).get("is_360_video", False)):
+                
+                # Get 360° video information
+                video_360_info = metadata["video_360"]
+                projection_type = video_360_info.get("projection_type", "equirectangular")
+                
+                # Generate 360° thumbnails for each timestamp
+                for timestamp in self.config.thumbnail_timestamps:
+                    angle_thumbnails = self.thumbnail_360_generator.generate_360_thumbnails(
+                        encoded_files.get("mp4", input_path),
+                        output_dir,
+                        timestamp,
+                        video_id,
+                        projection_type,
+                        self.config.thumbnail_360_projections,
+                    )
+                    
+                    # Store thumbnails by timestamp and angle
+                    for angle, thumbnail_path in angle_thumbnails.items():
+                        key = f"{timestamp}s_{angle}"
+                        thumbnails_360[key] = thumbnail_path
+                
+                # Generate 360° sprite sheets for each viewing angle
+                if self.config.generate_sprites:
+                    for angle in self.config.thumbnail_360_projections:
+                        sprite_360, webvtt_360 = self.thumbnail_360_generator.generate_360_sprite_thumbnails(
+                            encoded_files.get("mp4", input_path),
+                            output_dir,
+                            video_id,
+                            projection_type,
+                            angle,
+                        )
+                        sprite_360_files[angle] = (sprite_360, webvtt_360)
 
             return VideoProcessingResult(
                 video_id=video_id,
@@ -131,6 +188,8 @@ class VideoProcessor:
                 sprite_file=sprite_file,
                 webvtt_file=webvtt_file,
                 metadata=metadata,
+                thumbnails_360=thumbnails_360,
+                sprite_360_files=sprite_360_files,
             )
 
         except Exception as e:
