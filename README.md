@@ -336,7 +336,6 @@ docker-compose down -v
 
 **Services included:**
 - 🗄️ **PostgreSQL** - Database with Procrastinate job queue
-- 🔴 **Redis** - Caching and session storage
 - 🎬 **App** - Main video processor demo
 - ⚡ **Worker** - Background job processor
 - 🧪 **Test** - Automated testing environment

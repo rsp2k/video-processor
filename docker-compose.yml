@@ -25,18 +25,6 @@ services:
     networks:
       - video_net
 
-  # Redis for additional caching (optional)
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - video_net
 
   # Video Processor API service
   app:
@@ -47,7 +35,6 @@ services:
     environment:
       - DATABASE_URL=postgresql://video_user:video_password@postgres:5432/video_processor
       - PROCRASTINATE_DATABASE_URL=postgresql://video_user:video_password@postgres:5432/video_processor
-      - REDIS_URL=redis://redis:6379/0
       - PYTHONPATH=/app
     volumes:
       - .:/app
@@ -57,8 +44,6 @@ services:
       - "8000:8000"
     depends_on:
       postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
     networks:
       - video_net
@@ -138,8 +123,6 @@ services:
       - video_outputs:/app/outputs
     depends_on:
       postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
     networks:
       - video_net
