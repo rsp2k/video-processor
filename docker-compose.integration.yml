@@ -1,0 +1,102 @@
+# Docker Compose configuration for integration testing
+# Separate from main docker-compose.yml to avoid conflicts during testing
+
+version: '3.8'
+
+services:
+  # PostgreSQL for integration tests
+  postgres-integration:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: video_processor_integration_test
+      POSTGRES_USER: video_user
+      POSTGRES_PASSWORD: video_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U video_user -d video_processor_integration_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - integration_net
+    tmpfs:
+      - /var/lib/postgresql/data  # Use tmpfs for faster test database
+
+  # Migration service for integration tests
+  migrate-integration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migration
+    environment:
+      - PROCRASTINATE_DATABASE_URL=postgresql://video_user:video_password@postgres-integration:5432/video_processor_integration_test
+    depends_on:
+      postgres-integration:
+        condition: service_healthy
+    networks:
+      - integration_net
+    command: ["python", "-c", "
+      import asyncio;
+      from video_processor.tasks.migration import migrate_database;
+      asyncio.run(migrate_database('postgresql://video_user:video_password@postgres-integration:5432/video_processor_integration_test'))
+    "]
+
+  # Background worker for integration tests
+  worker-integration:
+    build:
+      context: .
+      dockerfile: Dockerfile  
+      target: worker
+    environment:
+      - PROCRASTINATE_DATABASE_URL=postgresql://video_user:video_password@postgres-integration:5432/video_processor_integration_test
+      - WORKER_CONCURRENCY=2  # Reduced for testing
+      - WORKER_TIMEOUT=60     # Faster timeout for tests
+    depends_on:
+      postgres-integration:
+        condition: service_healthy
+      migrate-integration:
+        condition: service_completed_successfully
+    networks:
+      - integration_net
+    volumes:
+      - integration_uploads:/app/uploads
+      - integration_outputs:/app/outputs
+    command: ["python", "-m", "video_processor.tasks.worker_compatibility", "worker"]
+
+  # Integration test runner
+  integration-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      - DATABASE_URL=postgresql://video_user:video_password@postgres-integration:5432/video_processor_integration_test
+      - PROCRASTINATE_DATABASE_URL=postgresql://video_user:video_password@postgres-integration:5432/video_processor_integration_test
+      - PYTEST_ARGS=${PYTEST_ARGS:--v --tb=short}
+    volumes:
+      - .:/app
+      - integration_uploads:/app/uploads
+      - integration_outputs:/app/outputs
+      - /var/run/docker.sock:/var/run/docker.sock  # Access to Docker for container management
+    depends_on:
+      postgres-integration:
+        condition: service_healthy
+      migrate-integration:
+        condition: service_completed_successfully
+      worker-integration:
+        condition: service_started
+    networks:
+      - integration_net
+    command: ["uv", "run", "pytest", "tests/integration/", "-v", "--tb=short", "--durations=10"]
+
+volumes:
+  integration_uploads:
+    driver: local
+  integration_outputs:
+    driver: local
+
+networks:
+  integration_net:
+    driver: bridge
