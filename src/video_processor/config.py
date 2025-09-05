@@ -7,7 +7,12 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # Optional dependency detection for 360° features
 try:
-    from .utils.video_360 import Video360Utils, ProjectionType, StereoMode, HAS_360_SUPPORT
+    from .utils.video_360 import (
+        HAS_360_SUPPORT,
+        ProjectionType,
+        StereoMode,
+        Video360Utils,
+    )
 except ImportError:
     # Fallback types when 360° libraries not available
     ProjectionType = str
@@ -43,7 +48,7 @@ class ProcessorConfig(BaseModel):
     # File permissions
     file_permissions: int = 0o644
     directory_permissions: int = 0o755
-    
+
     # 360° Video settings (only active if 360° libraries are available)
     enable_360_processing: bool = Field(default=HAS_360_SUPPORT)
     auto_detect_360: bool = Field(default=True)
@@ -67,7 +72,7 @@ class ProcessorConfig(BaseModel):
         if not v:
             raise ValueError("At least one output format must be specified")
         return v
-    
+
     @field_validator("enable_360_processing")
     @classmethod
     def validate_360_processing(cls, v: bool) -> bool:
@@ -75,7 +80,7 @@ class ProcessorConfig(BaseModel):
         if v and not HAS_360_SUPPORT:
             raise ValueError(
                 "360° processing requires optional dependencies. "
-                f"Install with: pip install 'video-processor[video-360]' or uv add 'video-processor[video-360]'"
+                "Install with: pip install 'video-processor[video-360]' or uv add 'video-processor[video-360]'"
             )
         return v
 

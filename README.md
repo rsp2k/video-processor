@@ -126,6 +126,67 @@ uv add "video-processor[video-360-full]"
 # Includes: All 360° dependencies + exifread
 ```
 
+### ⚡ Procrastinate Migration (2.x → 3.x)
+
+This library supports both **Procrastinate 2.x** and **3.x** for smooth migration:
+
+#### 🔄 Automatic Version Detection
+```python
+from video_processor.tasks.compat import get_version_info, IS_PROCRASTINATE_3_PLUS
+
+version_info = get_version_info()
+print(f"Using Procrastinate {version_info['procrastinate_version']}")
+print(f"Features available: {list(version_info['features'].keys())}")
+
+# Version-aware setup
+if IS_PROCRASTINATE_3_PLUS:
+    # Use 3.x features like improved performance, graceful shutdown
+    pass
+```
+
+#### 📋 Migration Steps
+1. **Install compatible version**:
+   ```bash
+   uv add "procrastinate>=3.5.2,<4.0.0"  # Or keep 2.x support: ">=2.15.1,<4.0.0"
+   ```
+
+2. **Apply database migrations**:
+   ```bash
+   # Procrastinate 3.x (two-step process)
+   procrastinate schema --apply --mode=pre    # Before deploying
+   # Deploy new code
+   procrastinate schema --apply --mode=post   # After deploying
+   
+   # Procrastinate 2.x (single step)
+   procrastinate schema --apply
+   ```
+
+3. **Use migration helper**:
+   ```python
+   from video_processor.tasks.migration import migrate_database
+   
+   # Automatic version-aware migration
+   success = await migrate_database("postgresql://localhost/mydb")
+   ```
+
+4. **Update worker configuration**:
+   ```python
+   from video_processor.tasks import get_worker_kwargs
+   
+   # Automatically normalizes options for your version
+   worker_options = get_worker_kwargs(
+       concurrency=4,
+       timeout=5,  # Maps to fetch_job_polling_interval in 3.x
+       remove_error=True,  # Maps to remove_failed in 3.x
+   )
+   ```
+
+#### 🆕 Procrastinate 3.x Benefits
+- **Better performance** with improved job fetching
+- **Graceful shutdown** with `shutdown_graceful_timeout`
+- **Enhanced error handling** and job cancellation
+- **Schema compatibility** improvements (3.5.2+)
+
 ### Development Setup
 
 ```bash
@@ -512,7 +573,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - ✨ **Multi-format encoding**: MP4, WebM, OGV support
 - 🖼️ **Thumbnail generation** with customizable timestamps
 - 🎞️ **Sprite sheet creation** with WebVTT files
-- ⚡ **Background processing** with Procrastinate
+- ⚡ **Background processing** with Procrastinate (2.x and 3.x compatible)
 - ⚙️ **Type-safe configuration** with Pydantic V2
 - 🛠️ **Modern tooling**: uv, ruff, pytest integration
 - 📚 **Comprehensive documentation** and examples

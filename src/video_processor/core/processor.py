@@ -55,7 +55,7 @@ class VideoProcessor:
         self.encoder = VideoEncoder(config)
         self.thumbnail_generator = ThumbnailGenerator(config)
         self.metadata_extractor = VideoMetadata(config)
-        
+
         # Initialize 360° thumbnail generator if available and enabled
         if HAS_360_SUPPORT and config.enable_360_processing:
             self.thumbnail_360_generator = Thumbnail360Generator(config)
@@ -138,19 +138,19 @@ class VideoProcessor:
                 sprite_file, webvtt_file = self.thumbnail_generator.generate_sprites(
                     encoded_files["mp4"], output_dir, video_id
                 )
-            
+
             # Generate 360° thumbnails and sprites if this is a 360° video
             thumbnails_360 = {}
             sprite_360_files = {}
-            
-            if (self.thumbnail_360_generator and 
+
+            if (self.thumbnail_360_generator and
                 self.config.generate_360_thumbnails and
                 metadata.get("video_360", {}).get("is_360_video", False)):
-                
+
                 # Get 360° video information
                 video_360_info = metadata["video_360"]
                 projection_type = video_360_info.get("projection_type", "equirectangular")
-                
+
                 # Generate 360° thumbnails for each timestamp
                 for timestamp in self.config.thumbnail_timestamps:
                     angle_thumbnails = self.thumbnail_360_generator.generate_360_thumbnails(
@@ -161,12 +161,12 @@ class VideoProcessor:
                         projection_type,
                         self.config.thumbnail_360_projections,
                     )
-                    
+
                     # Store thumbnails by timestamp and angle
                     for angle, thumbnail_path in angle_thumbnails.items():
                         key = f"{timestamp}s_{angle}"
                         thumbnails_360[key] = thumbnail_path
-                
+
                 # Generate 360° sprite sheets for each viewing angle
                 if self.config.generate_sprites:
                     for angle in self.config.thumbnail_360_projections:

@@ -3,10 +3,10 @@
 from pathlib import Path
 
 import ffmpeg
-from msprites2 import MontageSprites
 
 from ..config import ProcessorConfig
 from ..exceptions import EncodingError, FFmpegError
+from ..utils.sprite_generator import FixedSpriteGenerator
 
 
 class ThumbnailGenerator:
@@ -99,45 +99,28 @@ class ThumbnailGenerator:
         webvtt_file = output_dir / f"{video_id}_sprite.webvtt"
         thumbnail_dir = output_dir / "frames"
 
-        # Create frames directory
-        thumbnail_dir.mkdir(exist_ok=True)
-
         try:
-            # Generate sprites using msprites2 (the forked library)
-            MontageSprites.from_media(
-                video_path=str(video_path),
-                thumbnail_dir=str(thumbnail_dir),
-                sprite_file=str(sprite_file),
-                webvtt_file=str(webvtt_file),
-                # Optional parameters - can be made configurable
-                interval=self.config.sprite_interval,
-                width=160,  # Individual thumbnail width
-                height=90,  # Individual thumbnail height
-                columns=10,  # Thumbnails per row in sprite
+            # Use our fixed sprite generator
+            sprite_path, webvtt_path = FixedSpriteGenerator.create_sprite_sheet(
+                video_path=video_path,
+                thumbnail_dir=thumbnail_dir,
+                sprite_file=sprite_file,
+                webvtt_file=webvtt_file,
+                ips=1.0 / self.config.sprite_interval,
+                width=160,
+                height=90,
+                cols=10,
+                rows=10,
+                cleanup=True,
             )
 
         except Exception as e:
             raise EncodingError(f"Sprite generation failed: {e}") from e
 
-        if not sprite_file.exists():
+        if not sprite_path.exists():
             raise EncodingError("Sprite generation failed - sprite file not created")
 
-        if not webvtt_file.exists():
+        if not webvtt_path.exists():
             raise EncodingError("Sprite generation failed - WebVTT file not created")
 
-        # Clean up temporary frames directory
-        self._cleanup_frames_directory(thumbnail_dir)
-
-        return sprite_file, webvtt_file
-
-    def _cleanup_frames_directory(self, frames_dir: Path) -> None:
-        """Clean up temporary frame files."""
-        try:
-            if frames_dir.exists():
-                for frame_file in frames_dir.iterdir():
-                    if frame_file.is_file():
-                        frame_file.unlink()
-                frames_dir.rmdir()
-        except Exception:
-            # Don't fail the entire process if cleanup fails
-            pass
+        return sprite_path, webvtt_path

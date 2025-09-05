@@ -8,6 +8,11 @@ from procrastinate import App
 from ..config import ProcessorConfig
 from ..core.processor import VideoProcessor
 from ..exceptions import VideoProcessorError
+from .compat import (
+    create_app_with_connector,
+    get_version_info,
+    normalize_worker_kwargs,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -15,22 +20,43 @@ logger = logging.getLogger(__name__)
 app = App(connector=None)  # Connector will be set during setup
 
 
-def setup_procrastinate(database_url: str) -> App:
+def setup_procrastinate(
+    database_url: str,
+    connector_kwargs: dict | None = None,
+) -> App:
     """
     Set up Procrastinate with database connection.
 
     Args:
         database_url: PostgreSQL connection string
+        connector_kwargs: Additional connector configuration
 
     Returns:
         Configured Procrastinate app
     """
-    from procrastinate import AiopgConnector
+    connector_kwargs = connector_kwargs or {}
 
-    connector = AiopgConnector(conninfo=database_url)
-    app.connector = connector
+    # Use compatibility layer to create app with appropriate connector
+    configured_app = create_app_with_connector(database_url, **connector_kwargs)
 
+    # Update the global app instance
+    app.connector = configured_app.connector
+
+    logger.info(f"Procrastinate setup complete. Version info: {get_version_info()}")
     return app
+
+
+def get_worker_kwargs(**kwargs) -> dict:
+    """
+    Get normalized worker kwargs for the current Procrastinate version.
+    
+    Args:
+        **kwargs: Worker configuration options
+        
+    Returns:
+        Normalized kwargs for the current version
+    """
+    return normalize_worker_kwargs(**kwargs)
 
 
 @app.task(queue="video_processing")

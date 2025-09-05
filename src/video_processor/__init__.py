@@ -11,8 +11,8 @@ from .exceptions import EncodingError, StorageError, VideoProcessorError
 
 # Optional 360° imports
 try:
-    from .utils.video_360 import Video360Detection, Video360Utils, HAS_360_SUPPORT
     from .core.thumbnails_360 import Thumbnail360Generator
+    from .utils.video_360 import HAS_360_SUPPORT, Video360Detection, Video360Utils
 except ImportError:
     HAS_360_SUPPORT = False
 
@@ -30,6 +30,6 @@ __all__ = [
 if HAS_360_SUPPORT:
     __all__.extend([
         "Video360Detection",
-        "Video360Utils", 
+        "Video360Utils",
         "Thumbnail360Generator",
     ])

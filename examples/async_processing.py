@@ -14,7 +14,8 @@ from pathlib import Path
 
 import procrastinate
 from video_processor import ProcessorConfig
-from video_processor.tasks import setup_procrastinate
+from video_processor.tasks import setup_procrastinate, get_worker_kwargs
+from video_processor.tasks.compat import get_version_info, IS_PROCRASTINATE_3_PLUS
 
 
 async def async_processing_example():
@@ -25,8 +26,18 @@ async def async_processing_example():
     database_url = "postgresql://localhost/procrastinate_test"
     
     try:
-        # Set up Procrastinate
-        app = setup_procrastinate(database_url)
+        # Print version information
+        version_info = get_version_info()
+        print(f"Using Procrastinate {version_info['procrastinate_version']}")
+        print(f"Version 3.x+: {version_info['is_v3_plus']}")
+        
+        # Set up Procrastinate with version-appropriate settings
+        connector_kwargs = {}
+        if IS_PROCRASTINATE_3_PLUS:
+            # Procrastinate 3.x specific settings
+            connector_kwargs["pool_size"] = 10
+            
+        app = setup_procrastinate(database_url, connector_kwargs=connector_kwargs)
         
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)

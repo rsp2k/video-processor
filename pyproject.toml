@@ -4,20 +4,21 @@ build-backend = "hatchling.build"
 
 [project]
 name = "video-processor"
-version = "0.1.0"
+version = "0.2.0"
 description = "Standalone video processing pipeline with multiple format encoding"
 authors = [{name = "Video Processor", email = "dev@example.com"}]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "ffmpeg-python>=0.2.0",
-    "pillow>=11.2.1", 
+    "pillow>=11.2.1",
     "msprites2 @ git+https://github.com/rsp2k/msprites2.git",
-    "procrastinate>=2.15.1",
+    "procrastinate>=2.15.1,<4.0.0",  # Support both 2.x and 3.x during migration
     "psycopg[pool]>=3.2.9",
     "python-dateutil>=2.9.0",
     "pydantic>=2.0.0",
     "pydantic-settings>=2.0.0",
+    "exifread>=3.5.1",
 ]
 
 [project.optional-dependencies]
@@ -102,11 +103,13 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+asyncio_mode = "auto"
 
 [dependency-groups]
 dev = [
     "mypy>=1.17.1",
     "pytest>=8.4.2",
+    "pytest-asyncio>=0.21.0",
     "pytest-cov>=6.2.1",
     "ruff>=0.12.12",
 ]
