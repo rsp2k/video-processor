@@ -1,7 +1,6 @@
 # Docker Compose configuration for integration testing
 # Separate from main docker-compose.yml to avoid conflicts during testing
 
-version: '3.8'
 
 services:
   # PostgreSQL for integration tests

@@ -1,7 +1,6 @@
 # Docker Compose setup for Video Processor with Procrastinate
 # Complete development and testing environment
 
-version: '3.8'
 
 services:
   # PostgreSQL database for Procrastinate
