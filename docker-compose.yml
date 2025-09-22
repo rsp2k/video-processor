@@ -1,0 +1,140 @@
+# Docker Compose setup for Video Processor with Procrastinate
+# Complete development and testing environment
+
+
+services:
+  # PostgreSQL database for Procrastinate
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: video_processor
+      POSTGRES_USER: video_user
+      POSTGRES_PASSWORD: video_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U video_user -d video_processor"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - video_net
+
+
+  # Video Processor API service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      - DATABASE_URL=postgresql://video_user:video_password@postgres:5432/video_processor
+      - PROCRASTINATE_DATABASE_URL=postgresql://video_user:video_password@postgres:5432/video_processor
+      - PYTHONPATH=/app
+    volumes:
+      - .:/app
+      - video_uploads:/app/uploads
+      - video_outputs:/app/outputs
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - video_net
+    command: ["python", "examples/docker_demo.py"]
+
+  # Procrastinate worker for background processing
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
+    environment:
+      - PROCRASTINATE_DATABASE_URL=postgresql://video_user:video_password@postgres:5432/video_processor
+      - WORKER_CONCURRENCY=4
+      - WORKER_TIMEOUT=300
+    volumes:
+      - video_uploads:/app/uploads
+      - video_outputs:/app/outputs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - video_net
+    command: ["python", "-m", "video_processor.tasks.worker_compatibility", "worker"]
+
+  # Migration service (runs once to setup DB)
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migration
+    environment:
+      - PROCRASTINATE_DATABASE_URL=postgresql://video_user:video_password@postgres:5432/video_processor
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - video_net
+    command: ["python", "-c", "
+      import asyncio;
+      from video_processor.tasks.migration import migrate_database;
+      asyncio.run(migrate_database('postgresql://video_user:video_password@postgres:5432/video_processor'))
+    "]
+
+  # Test runner service
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      - DATABASE_URL=postgresql://video_user:video_password@postgres:5432/video_processor_test
+      - PROCRASTINATE_DATABASE_URL=postgresql://video_user:video_password@postgres:5432/video_processor_test
+    volumes:
+      - .:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - video_net
+    command: ["uv", "run", "pytest", "tests/", "-v", "--cov=src/", "--cov-report=html", "--cov-report=term"]
+
+  # Demo web interface (optional)
+  demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      - DATABASE_URL=postgresql://video_user:video_password@postgres:5432/video_processor
+      - PROCRASTINATE_DATABASE_URL=postgresql://video_user:video_password@postgres:5432/video_processor
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - video_uploads:/app/uploads
+      - video_outputs:/app/outputs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - video_net
+    command: ["python", "examples/web_demo.py"]
+
+volumes:
+  postgres_data:
+    driver: local
+  video_uploads:
+    driver: local
+  video_outputs:
+    driver: local
+
+networks:
+  video_net:
+    driver: bridge

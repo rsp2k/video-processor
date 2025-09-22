@@ -1,0 +1,488 @@
+{
+  "base_dir": "tests/fixtures/videos",
+  "categories": {
+    "smoke": "Quick smoke tests (< 5 videos)",
+    "basic": "Basic functionality tests",
+    "codecs": "Codec-specific tests",
+    "edge_cases": "Edge cases and boundary conditions",
+    "stress": "Stress and performance tests",
+    "regression": "Regression test suite",
+    "full": "Complete test suite"
+  },
+  "suites": {
+    "smoke": [
+      "synthetic/edge_cases/single_frame.mp4",
+      "synthetic/patterns/smpte_bars.mp4"
+    ],
+    "basic": [
+      "opensource/resolutions/big_buck_bunny_720p.mp4",
+      "synthetic/patterns/checkerboard.mp4",
+      "synthetic/patterns/rgb_test.mp4",
+      "synthetic/patterns/smpte_bars.mp4",
+      "synthetic/patterns/yuv_test.mp4"
+    ],
+    "codecs": [
+      "synthetic/codecs/10bit.mp4",
+      "synthetic/codecs/h264_baseline_3_0.mp4",
+      "synthetic/codecs/h264_high_5_1.mp4",
+      "synthetic/codecs/h264_main_4_0.mp4",
+      "synthetic/codecs/h265_hevc.mp4",
+      "synthetic/codecs/mpeg4.mp4",
+      "synthetic/codecs/theora.ogv",
+      "synthetic/codecs/vp8.webm",
+      "synthetic/codecs/vp9.webm"
+    ],
+    "edge_cases": [
+      "synthetic/audio/audio_only.mp4",
+      "synthetic/audio/no_audio.mp4",
+      "synthetic/edge_cases/high_fps_120.mp4",
+      "synthetic/edge_cases/line_horizontal.mp4",
+      "synthetic/edge_cases/line_vertical.mp4",
+      "synthetic/edge_cases/long_static.mp4",
+      "synthetic/edge_cases/odd_dimensions.mp4",
+      "synthetic/edge_cases/single_frame.mp4",
+      "synthetic/edge_cases/small_square.mp4",
+      "synthetic/edge_cases/tiny_16x16.mp4",
+      "synthetic/edge_cases/ultra_tall_1_16.mp4",
+      "synthetic/edge_cases/ultra_wide_16_1.mp4"
+    ],
+    "stress": [
+      "synthetic/motion/fast_rotation.mp4",
+      "synthetic/stress/high_complexity.mp4"
+    ]
+  },
+  "videos": {
+    "edge_cases/high_fps.mp4": {
+      "size_mb": 1.0311803817749023,
+      "hash": "1e479f21ca88417a"
+    },
+    "edge_cases/long_duration.mp4": {
+      "size_mb": 1.2983989715576172,
+      "hash": "57326370b4f42c4e"
+    },
+    "edge_cases/audio_only.mp4": {
+      "size_mb": 0.04619026184082031,
+      "hash": "d4504376975a6e10"
+    },
+    "edge_cases/one_frame.mp4": {
+      "size_mb": 0.008635520935058594,
+      "hash": "27a999c593d59464"
+    },
+    "valid/standard_h264.mp4": {
+      "size_mb": 3.879239082336426,
+      "hash": "d2755623873c2316"
+    },
+    "valid/720p.mp4": {
+      "size_mb": 1.171544075012207,
+      "hash": "66532a7df96b42b2"
+    },
+    "valid/360p.mp4": {
+      "size_mb": 0.33516407012939453,
+      "hash": "76ef90adca5da12a"
+    },
+    "valid/vertical.mp4": {
+      "size_mb": 1.2143487930297852,
+      "hash": "799d5b79388c4356"
+    },
+    "valid/square.mp4": {
+      "size_mb": 0.71051025390625,
+      "hash": "2fc335a2cdb96956"
+    },
+    "valid/mono.mp4": {
+      "size_mb": 0.36586856842041016,
+      "hash": "2da4d67452fc354f"
+    },
+    "valid/1080p.mp4": {
+      "size_mb": 2.35089111328125,
+      "hash": "6ee3c0317e826af7"
+    },
+    "valid/tiny_resolution.mp4": {
+      "size_mb": 0.09168243408203125,
+      "hash": "e8110d594b234a44"
+    },
+    "valid/standard_short.mp4": {
+      "size_mb": 0.6065034866333008,
+      "hash": "10914f194c9a8fc1"
+    },
+    "valid/stereo.mp4": {
+      "size_mb": 0.36710071563720703,
+      "hash": "30e3503d57eb99c9"
+    },
+    "valid/no_audio.mp4": {
+      "size_mb": 0.3190460205078125,
+      "hash": "7841709b2840c1ac"
+    },
+    "valid/format_mp4.mp4": {
+      "size_mb": 0.36710071563720703,
+      "hash": "30e3503d57eb99c9"
+    },
+    "valid/480p.mp4": {
+      "size_mb": 0.5043325424194336,
+      "hash": "3fc8948d3ee70009"
+    },
+    "corrupt/empty.mp4": {
+      "size_mb": 0.0,
+      "hash": "e3b0c44298fc1c14"
+    },
+    "corrupt/truncated.mp4": {
+      "size_mb": 0.0009765625,
+      "hash": "3aa662f1fa2ce353"
+    },
+    "corrupt/bad_header.mp4": {
+      "size_mb": 0.36710071563720703,
+      "hash": "5abc46e148f481f2"
+    },
+    "corrupt/text_file.mp4": {
+      "size_mb": 0.00247955322265625,
+      "hash": "0795f3050d1467ac"
+    },
+    "corrupt/random_bytes.mp4": {
+      "size_mb": 0.0048828125,
+      "hash": "e18010a997182767"
+    },
+    "opensource/resolutions/big_buck_bunny_720p.mp4": {
+      "size_mb": 0.0064945220947265625,
+      "hash": "bb2b7cc1ab5cf021"
+    },
+    "opensource/patterns/test_patterns_sample_video.mp4": {
+      "size_mb": 0.0064945220947265625,
+      "hash": "bb2b7cc1ab5cf021"
+    },
+    "synthetic/motion/scene_changes.seg7.mp4": {
+      "size_mb": 0.0019941329956054688,
+      "hash": "1901716bb949195a"
+    },
+    "synthetic/motion/scene_changes.seg4.mp4": {
+      "size_mb": 0.0019989013671875,
+      "hash": "b3809dd0bb81bb15"
+    },
+    "synthetic/motion/scene_changes.seg6.mp4": {
+      "size_mb": 0.0019941329956054688,
+      "hash": "8cd6b812b9bd3bd3"
+    },
+    "synthetic/motion/fast_rotation.mp4": {
+      "size_mb": 1.414144515991211,
+      "hash": "78bc591d4b30178b"
+    },
+    "synthetic/motion/scene_changes.seg2.mp4": {
+      "size_mb": 0.0019989013671875,
+      "hash": "a469a7c02e0368e7"
+    },
+    "synthetic/motion/scene_changes.seg0.mp4": {
+      "size_mb": 0.0019989013671875,
+      "hash": "3f4c7101c6f65992"
+    },
+    "synthetic/motion/camera_shake.mp4": {
+      "size_mb": 1.0844707489013672,
+      "hash": "33a0f1970a6c10c3"
+    },
+    "synthetic/motion/scene_changes.seg3.mp4": {
+      "size_mb": 0.0019989013671875,
+      "hash": "8a64284ecd5e5708"
+    },
+    "synthetic/motion/scene_changes.seg1.mp4": {
+      "size_mb": 0.0019998550415039062,
+      "hash": "58088ff180a1cb57"
+    },
+    "synthetic/motion/slow_rotation.mp4": {
+      "size_mb": 0.9175500869750977,
+      "hash": "13ea37e1d4ca7575"
+    },
+    "synthetic/motion/scene_changes.seg5.mp4": {
+      "size_mb": 0.0019989013671875,
+      "hash": "360e2dc26904b420"
+    },
+    "synthetic/stress/high_complexity.mp4": {
+      "size_mb": 2.422163963317871,
+      "hash": "8cf4c8ba1f54108e"
+    },
+    "synthetic/edge_cases/line_horizontal.mp4": {
+      "size_mb": 0.0022296905517578125,
+      "hash": "7ca494ce60023419"
+    },
+    "synthetic/edge_cases/tiny_16x16.mp4": {
+      "size_mb": 0.002368927001953125,
+      "hash": "ddf14352085c3817"
+    },
+    "synthetic/edge_cases/small_square.mp4": {
+      "size_mb": 0.015123367309570312,
+      "hash": "cfc03b6ea9fe1262"
+    },
+    "synthetic/edge_cases/long_static.mp4": {
+      "size_mb": 0.19352149963378906,
+      "hash": "e326135c0caad39d"
+    },
+    "synthetic/edge_cases/single_frame.mp4": {
+      "size_mb": 0.0015649795532226562,
+      "hash": "588d4dc830368186"
+    },
+    "synthetic/edge_cases/odd_dimensions.mp4": {
+      "size_mb": 0.44886016845703125,
+      "hash": "5f957380391fa3b4"
+    },
+    "synthetic/edge_cases/ultra_wide_16_1.mp4": {
+      "size_mb": 0.49410343170166016,
+      "hash": "63cab36ddd0d8da8"
+    },
+    "synthetic/edge_cases/line_vertical.mp4": {
+      "size_mb": 0.0030469894409179688,
+      "hash": "691663a1adc6bdb8"
+    },
+    "synthetic/edge_cases/high_fps_120.mp4": {
+      "size_mb": 0.4442148208618164,
+      "hash": "2a904e4d8cac51e8"
+    },
+    "synthetic/edge_cases/ultra_tall_1_16.mp4": {
+      "size_mb": 0.6116046905517578,
+      "hash": "7a521575831169bb"
+    },
+    "synthetic/codecs/h264_baseline_3_0.mp4": {
+      "size_mb": 1.0267839431762695,
+      "hash": "7abed98c777367aa"
+    },
+    "synthetic/codecs/h264_main_4_0.mp4": {
+      "size_mb": 0.9958248138427734,
+      "hash": "d0b6b393d7d6d996"
+    },
+    "synthetic/codecs/mpeg4.mp4": {
+      "size_mb": 0.4551572799682617,
+      "hash": "a51f18bd62db116b"
+    },
+    "synthetic/codecs/10bit.mp4": {
+      "size_mb": 0.46748924255371094,
+      "hash": "942acc99a78bf368"
+    },
+    "synthetic/codecs/h264_high_5_1.mp4": {
+      "size_mb": 1.0099611282348633,
+      "hash": "07312bced7c62f4d"
+    },
+    "synthetic/codecs/h265_hevc.mp4": {
+      "size_mb": 0.44202709197998047,
+      "hash": "ae0ca610ccf2e115"
+    },
+    "synthetic/audio/mono_22khz.mp4": {
+      "size_mb": 0.22789955139160156,
+      "hash": "92c5025af8a3418f"
+    },
+    "synthetic/audio/audio_only.mp4": {
+      "size_mb": 0.04314708709716797,
+      "hash": "b831f2dcc07cb8a2"
+    },
+    "synthetic/audio/mono_8khz.mp4": {
+      "size_mb": 0.21941375732421875,
+      "hash": "175373fdfbd6199d"
+    },
+    "synthetic/audio/stereo_48khz.mp4": {
+      "size_mb": 0.24405670166015625,
+      "hash": "45967532db26aa94"
+    },
+    "synthetic/audio/no_audio.mp4": {
+      "size_mb": 0.32957935333251953,
+      "hash": "4d3625113246bf93"
+    },
+    "synthetic/audio/stereo_44khz.mp4": {
+      "size_mb": 0.24421119689941406,
+      "hash": "e468626d528a6648"
+    },
+    "synthetic/patterns/yuv_test.mp4": {
+      "size_mb": 0.007929801940917969,
+      "hash": "8caa160d983f1905"
+    },
+    "synthetic/patterns/checkerboard.mp4": {
+      "size_mb": 0.009964942932128906,
+      "hash": "76c9ee3e1d690444"
+    },
+    "synthetic/patterns/rgb_test.mp4": {
+      "size_mb": 0.010638236999511719,
+      "hash": "52ba36a4f81266b2"
+    },
+    "synthetic/patterns/smpte_bars.mp4": {
+      "size_mb": 0.005916595458984375,
+      "hash": "c87fa619e722df27"
+    },
+    "synthetic_test/motion/scene_changes.seg7.mp4": {
+      "size_mb": 0.0019941329956054688,
+      "hash": "1901716bb949195a"
+    },
+    "synthetic_test/motion/scene_changes.seg4.mp4": {
+      "size_mb": 0.0019989013671875,
+      "hash": "b3809dd0bb81bb15"
+    },
+    "synthetic_test/motion/scene_changes.seg6.mp4": {
+      "size_mb": 0.0019941329956054688,
+      "hash": "8cd6b812b9bd3bd3"
+    },
+    "synthetic_test/motion/fast_rotation.mp4": {
+      "size_mb": 1.414144515991211,
+      "hash": "78bc591d4b30178b"
+    },
+    "synthetic_test/motion/scene_changes.seg2.mp4": {
+      "size_mb": 0.0019989013671875,
+      "hash": "a469a7c02e0368e7"
+    },
+    "synthetic_test/motion/scene_changes.seg0.mp4": {
+      "size_mb": 0.0019989013671875,
+      "hash": "3f4c7101c6f65992"
+    },
+    "synthetic_test/motion/camera_shake.mp4": {
+      "size_mb": 1.0844707489013672,
+      "hash": "33a0f1970a6c10c3"
+    },
+    "synthetic_test/motion/scene_changes.seg3.mp4": {
+      "size_mb": 0.0019989013671875,
+      "hash": "8a64284ecd5e5708"
+    },
+    "synthetic_test/motion/scene_changes.seg1.mp4": {
+      "size_mb": 0.0019998550415039062,
+      "hash": "58088ff180a1cb57"
+    },
+    "synthetic_test/motion/slow_rotation.mp4": {
+      "size_mb": 0.9175500869750977,
+      "hash": "13ea37e1d4ca7575"
+    },
+    "synthetic_test/motion/scene_changes.seg5.mp4": {
+      "size_mb": 0.0019989013671875,
+      "hash": "360e2dc26904b420"
+    },
+    "synthetic_test/edge_cases/line_horizontal.mp4": {
+      "size_mb": 0.0022296905517578125,
+      "hash": "7ca494ce60023419"
+    },
+    "synthetic_test/edge_cases/tiny_16x16.mp4": {
+      "size_mb": 0.002368927001953125,
+      "hash": "ddf14352085c3817"
+    },
+    "synthetic_test/edge_cases/small_square.mp4": {
+      "size_mb": 0.015123367309570312,
+      "hash": "cfc03b6ea9fe1262"
+    },
+    "synthetic_test/edge_cases/long_static.mp4": {
+      "size_mb": 0.19352149963378906,
+      "hash": "e326135c0caad39d"
+    },
+    "synthetic_test/edge_cases/single_frame.mp4": {
+      "size_mb": 0.0015649795532226562,
+      "hash": "588d4dc830368186"
+    },
+    "synthetic_test/edge_cases/odd_dimensions.mp4": {
+      "size_mb": 0.44886016845703125,
+      "hash": "5f957380391fa3b4"
+    },
+    "synthetic_test/edge_cases/ultra_wide_16_1.mp4": {
+      "size_mb": 0.49410343170166016,
+      "hash": "63cab36ddd0d8da8"
+    },
+    "synthetic_test/edge_cases/line_vertical.mp4": {
+      "size_mb": 0.0030469894409179688,
+      "hash": "691663a1adc6bdb8"
+    },
+    "synthetic_test/edge_cases/high_fps_120.mp4": {
+      "size_mb": 0.4442148208618164,
+      "hash": "2a904e4d8cac51e8"
+    },
+    "synthetic_test/edge_cases/ultra_tall_1_16.mp4": {
+      "size_mb": 0.6116046905517578,
+      "hash": "7a521575831169bb"
+    },
+    "synthetic_test/codecs/h264_baseline_3_0.mp4": {
+      "size_mb": 1.0267839431762695,
+      "hash": "7abed98c777367aa"
+    },
+    "synthetic_test/codecs/h264_main_4_0.mp4": {
+      "size_mb": 0.9958248138427734,
+      "hash": "d0b6b393d7d6d996"
+    },
+    "synthetic_test/codecs/mpeg4.mp4": {
+      "size_mb": 0.4551572799682617,
+      "hash": "a51f18bd62db116b"
+    },
+    "synthetic_test/codecs/10bit.mp4": {
+      "size_mb": 0.46748924255371094,
+      "hash": "942acc99a78bf368"
+    },
+    "synthetic_test/codecs/h264_high_5_1.mp4": {
+      "size_mb": 1.0099611282348633,
+      "hash": "07312bced7c62f4d"
+    },
+    "synthetic_test/codecs/h265_hevc.mp4": {
+      "size_mb": 0.44202709197998047,
+      "hash": "ae0ca610ccf2e115"
+    },
+    "synthetic_test/audio/mono_22khz.mp4": {
+      "size_mb": 0.22789955139160156,
+      "hash": "92c5025af8a3418f"
+    },
+    "synthetic_test/audio/audio_only.mp4": {
+      "size_mb": 0.04314708709716797,
+      "hash": "b831f2dcc07cb8a2"
+    },
+    "synthetic_test/audio/mono_8khz.mp4": {
+      "size_mb": 0.21941375732421875,
+      "hash": "175373fdfbd6199d"
+    },
+    "synthetic_test/audio/stereo_48khz.mp4": {
+      "size_mb": 0.24405670166015625,
+      "hash": "45967532db26aa94"
+    },
+    "synthetic_test/audio/no_audio.mp4": {
+      "size_mb": 0.32957935333251953,
+      "hash": "4d3625113246bf93"
+    },
+    "synthetic_test/audio/stereo_44khz.mp4": {
+      "size_mb": 0.24421119689941406,
+      "hash": "e468626d528a6648"
+    },
+    "synthetic_test/patterns/yuv_test.mp4": {
+      "size_mb": 0.007929801940917969,
+      "hash": "8caa160d983f1905"
+    },
+    "synthetic_test/patterns/checkerboard.mp4": {
+      "size_mb": 0.009964942932128906,
+      "hash": "76c9ee3e1d690444"
+    },
+    "synthetic_test/patterns/rgb_test.mp4": {
+      "size_mb": 0.010638236999511719,
+      "hash": "52ba36a4f81266b2"
+    },
+    "synthetic_test/patterns/smpte_bars.mp4": {
+      "size_mb": 0.005916595458984375,
+      "hash": "c87fa619e722df27"
+    },
+    "valid/standard_vp9.webm": {
+      "size_mb": 0.0002498626708984375,
+      "hash": "b9f7ca40c96261fe"
+    },
+    "valid/format_webm.webm": {
+      "size_mb": 0.0002498626708984375,
+      "hash": "b9f7ca40c96261fe"
+    },
+    "synthetic/codecs/vp8.webm": {
+      "size_mb": 0.09073257446289062,
+      "hash": "2882bc303973647f"
+    },
+    "synthetic/codecs/vp9.webm": {
+      "size_mb": 0.6586151123046875,
+      "hash": "abe6b03d2e3c72d3"
+    },
+    "synthetic_test/codecs/vp8.webm": {
+      "size_mb": 0.09073257446289062,
+      "hash": "a0fff7d1049fcb89"
+    },
+    "synthetic_test/codecs/vp9.webm": {
+      "size_mb": 0.6586151123046875,
+      "hash": "ef862dbeef124039"
+    },
+    "valid/format_ogv.ogv": {
+      "size_mb": 0.0,
+      "hash": "e3b0c44298fc1c14"
+    },
+    "synthetic/codecs/theora.ogv": {
+      "size_mb": 0.08295631408691406,
+      "hash": "f5f6cbc3b5d2d076"
+    },
+    "synthetic_test/codecs/theora.ogv": {
+      "size_mb": 0.08295631408691406,
+      "hash": "c046537362fe7117"
+    }
+  }
+}

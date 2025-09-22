@@ -1,0 +1,27 @@
+{
+  "videos": [
+    {
+      "path": "resolutions/big_buck_bunny_720p.mp4",
+      "category": "resolutions",
+      "size_mb": 0.0064945220947265625,
+      "metadata": {}
+    },
+    {
+      "path": "patterns/test_patterns_sample_video.mp4",
+      "category": "patterns",
+      "size_mb": 0.0064945220947265625,
+      "metadata": {}
+    }
+  ],
+  "total_size_mb": 0.012989044189453125,
+  "categories": {
+    "standard": [],
+    "codecs": [],
+    "resolutions": [
+      "resolutions/big_buck_bunny_720p.mp4"
+    ],
+    "patterns": [
+      "patterns/test_patterns_sample_video.mp4"
+    ]
+  }
+}
